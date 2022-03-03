@@ -6,8 +6,8 @@ hands = mp_hands.Hands()
 mp_draw = mp.solutions.drawing_utils
 cap = cv2.VideoCapture(0)
 
-finger_tips =[8, 12, 16, 20]
-thumb_tip= 4
+finger_tips = [8, 12, 16, 20]
+thumb_tip = 4
 
 while True:
     ret,img = cap.read()
@@ -18,20 +18,21 @@ while True:
 
     if results.multi_hand_landmarks:
         for hand_landmark in results.multi_hand_landmarks:
-            #accessing the landmarks by their position
+            # Acceder a los puntos de referencia por su posición
             lm_list=[]
             for id ,lm in enumerate(hand_landmark.landmark):
                 lm_list.append(lm)
 
-            #array to hold true or false if finger is folded    
+            # Matriz para almacenar "true" o "false" si el dedo está doblado
             finger_fold_status =[]
             for tip in finger_tips:
-                #getting the landmark tip position and drawing blue circle
+                # Obtener el punto de referencia de la posición de la punta y dibujar un círculo azul
                 x,y = int(lm_list[tip].x*w), int(lm_list[tip].y*h)
                 cv2.circle(img, (x,y), 15, (255, 0, 0), cv2.FILLED)
 
-                #writing condition to check if finger is folded i.e checking if finger tip starting value is smaller than finger starting position which is inner landmark. for index finger    
-                #if finger folded changing color to green
+                # Escribiendo una condición para verificar si el dedo está doblado, 
+                # es decir, verificar si el valor inicial de la punta del dedo es menor que la posición inicial del dedo que es el punto de referencia interno del índice del dedo
+                # Si el dedo está doblado, cambiar el color a verde
                 if lm_list[tip].x < lm_list[tip - 3].x:
                     cv2.circle(img, (x,y), 15, (0, 255, 0), cv2.FILLED)
                     finger_fold_status.append(True)
@@ -40,17 +41,17 @@ while True:
 
             print(finger_fold_status)
 
-             #checking if all fingers are folded
+             # Verificar si todos los dedos están doblados
             if all(finger_fold_status):
-                #checking if the thumb is up
+                # Verificar si el pulgar está arriba
                 if lm_list[thumb_tip].y < lm_list[thumb_tip-1].y < lm_list[thumb_tip-2].y:
-                    print("LIKE")  
-                    cv2.putText(img ,"LIKE", (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 3)
+                    print("Me gusta")  
+                    cv2.putText(img ,"Me gusta", (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 3)
 
-                #check if thumb is down
+                # Verificar si el pulgar está abajo
                 if lm_list[thumb_tip].y > lm_list[thumb_tip-1].y > lm_list[thumb_tip-2].y:
-                    print("DISLIKE")   
-                    cv2.putText(img ,"DISLIKE", (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
+                    print("No me gusta")   
+                    cv2.putText(img ,"No me gusta", (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
 
 
 
@@ -60,5 +61,5 @@ while True:
             mp_draw.DrawingSpec((0,255,0),4,2))
     
 
-    cv2.imshow("hand tracking", img)
+    cv2.imshow("Rastreo de manos", img)
     cv2.waitKey(1)
